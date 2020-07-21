@@ -71,12 +71,19 @@ module ActionController
       end
     end
 
-    def default_serializer(resource)
+    def namespaced_serializer(resource)
       options = {}.tap do |o|
         o[:namespace] = namespace_for_serializer if namespace_for_serializer
       end
 
       ActiveModel::Serializer.serializer_for(resource, options)
+    end
+
+    def default_serializer(resource)
+      serializer = namespaced_serializer(resource)
+      return serializer if serializer
+
+      return ActiveModel::Serializer.serializer_for(resource)
     end
 
     def default_serializer_options
